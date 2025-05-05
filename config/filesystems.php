@@ -29,6 +29,21 @@ return [
     */
 
     'disks' => [
+        // 'projectsStorage' => [
+        //     'driver' => 'local',
+        //     //'root' => public_path('projects-storage'),
+        //     'root' => '/var/www/html/osc/public/projects-storage',
+        //     'url' => env('projectsStorage_FILESYSTEM_URL'),
+        //     'throw' => false,
+        // ],
+
+        'projectsStorage' => [
+            'driver' => 'local',
+            'root' => public_path('projects-storage'),
+            'throw' => false,
+            'url' => env('APP_URL').'/projects-storage',
+            'visibility' => 'public',
+        ],
 
         'local' => [
             'driver' => 'local',
@@ -72,7 +87,7 @@ return [
 
     'links' => [
         //public_path('storage') => storage_path('app/public'),
-        public_path('storage') => env('PUBLIC_FILESYSTEM_ROOT')
+        public_path('storage') => env('PUBLIC_FILESYSTEM_ROOT'),
     ],
 
 ];
