@@ -11,6 +11,17 @@ class Project extends Model
 
     protected $guarded = [];
 
+    public static function whereGitLinkExists(string $git_link): bool
+    {
+        $link_bro = $git_link[strlen($git_link)-1]=="/"? rtrim($git_link, '/') : $git_link . "/";
+        return self::where('git_link', $git_link)->orWhere('git_link', $link_bro)->exists();
+    }
+
+    public static function whereSlugExists(string $slug): bool
+    {
+        return self::where('slug', $slug)->exists();
+    }
+
     public function medias()
     {
         return $this->hasMany(ProjectMedia::class);

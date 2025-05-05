@@ -17,7 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-
+use \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -54,6 +54,10 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->sidebarFullyCollapsibleOnDesktop();
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->plugins([
+                FilamentJobsMonitorPlugin::make()
+            ]);
+            ;
     }
 }
