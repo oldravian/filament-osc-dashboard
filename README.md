@@ -1,66 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# OSC Admin
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+OSC Admin is a Laravel-based project designed to manage and display open-source projects. It provides features for importing, categorizing, and managing projects, along with associated media, technologies, and categories. The project integrates with Filament Admin for backend management and includes custom modules for scraping project data and handling media uploads.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Project Management**: Create, edit, and delete projects with associated categories, technologies, and media.
+- **GitHub Integration**: Import project details directly from GitHub repositories.
+- **Media Management**: Upload, manage, and associate media files with projects.
+- **Category and Technology Management**: Organize projects by categories and technologies.
+- **Custom Scraper Service**: Fetch project details from external sources.
+- **Filament Admin Integration**: Use Filament for an intuitive admin panel.
+- **Queue Jobs**: Handle media imports and other tasks asynchronously.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Modules
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. **Controllers**
+   - **`ProjectController`** ([app/Http/Controllers/ProjectController.php](app/Http/Controllers/ProjectController.php)): Handles project-related operations such as listing, creating, and importing projects. Includes methods for managing media and debugging.
 
-## Learning Laravel
+### 2. **Models**
+   - **`Project`** ([app/Models/Project.php](app/Models/Project.php)): Represents a project entity with relationships to categories, technologies, and media.
+   - **`Category`** ([app/Models/Category.php](app/Models/Category.php)): Represents project categories.
+   - **`Technology`** ([app/Models/Technology.php](app/Models/Technology.php)): Represents technologies associated with projects.
+   - **`ProjectMedia`** ([app/Models/ProjectMedia.php](app/Models/ProjectMedia.php)): Handles media files linked to projects.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 3. **Filament Resources**
+   - **`ProjectResource`** ([app/Filament/Resources/ProjectResource.php](app/Filament/Resources/ProjectResource.php)): Provides Filament-based CRUD operations for projects.
+   - **Pages**:
+     - **`CreateProject`** ([app/Filament/Resources/ProjectResource/Pages/CreateProject.php](app/Filament/Resources/ProjectResource/Pages/CreateProject.php)): Handles project creation.
+     - **`EditProject`** ([app/Filament/Resources/ProjectResource/Pages/EditProject.php](app/Filament/Resources/ProjectResource/Pages/EditProject.php)): Handles project editing.
+     - **`ImportProject`** ([app/Filament/Resources/ProjectResource/Pages/ImportProject.php](app/Filament/Resources/ProjectResource/Pages/ImportProject.php)): Imports project data from GitHub.
+     - **`ListProjects`** ([app/Filament/Resources/ProjectResource/Pages/ListProjects.php](app/Filament/Resources/ProjectResource/Pages/ListProjects.php)): Displays a list of projects.
+- **`PostResource`** ([app/Filament/Resources/PostResource.php](app/Filament/Resources/PostResource.php)): Provides Filament-based CRUD operations for posts.  
+  - **Pages**:  
+    - **`CreatePost`** ([app/Filament/Resources/PostResource/Pages/CreatePost.php](app/Filament/Resources/PostResource/Pages/CreatePost.php)): Handles post creation.  
+    - **`EditPost`** ([app/Filament/Resources/PostResource/Pages/EditPost.php](app/Filament/Resources/PostResource/Pages/EditPost.php)): Handles post editing.  
+    - **`ListPosts`** ([app/Filament/Resources/PostResource/Pages/ListPosts.php](app/Filament/Resources/PostResource/Pages/ListPosts.php)): Displays a list of posts.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **`CategoryResource`** ([app/Filament/Resources/CategoryResource.php](app/Filament/Resources/CategoryResource.php)): Provides Filament-based CRUD operations for categories.  
+  - **Pages**:  
+    - **`CreateCategory`** ([app/Filament/Resources/CategoryResource/Pages/CreateCategory.php](app/Filament/Resources/CategoryResource/Pages/CreateCategory.php)): Handles category creation.  
+    - **`EditCategory`** ([app/Filament/Resources/CategoryResource/Pages/EditCategory.php](app/Filament/Resources/CategoryResource/Pages/EditCategory.php)): Handles category editing.  
+    - **`ListCategories`** ([app/Filament/Resources/CategoryResource/Pages/ListCategories.php](app/Filament/Resources/CategoryResource/Pages/ListCategories.php)): Displays a list of categories.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **`TechnologyResource`** ([app/Filament/Resources/TechnologyResource.php](app/Filament/Resources/TechnologyResource.php)): Provides Filament-based CRUD operations for technologies.  
+  - **Pages**:  
+    - **`CreateTechnology`** ([app/Filament/Resources/TechnologyResource/Pages/CreateTechnology.php](app/Filament/Resources/TechnologyResource/Pages/CreateTechnology.php)): Handles technology creation.  
+    - **`EditTechnology`** ([app/Filament/Resources/TechnologyResource/Pages/EditTechnology.php](app/Filament/Resources/TechnologyResource/Pages/EditTechnology.php)): Handles technology editing.  
+    - **`ListTechnologies`** ([app/Filament/Resources/TechnologyResource/Pages/ListTechnologies.php](app/Filament/Resources/TechnologyResource/Pages/ListTechnologies.php)): Displays a list of technologies.
 
-## Laravel Sponsors
+- **`UserResource`** ([app/Filament/Resources/UserResource.php](app/Filament/Resources/UserResource.php)): Provides Filament-based CRUD operations for users.  
+  - **Pages**:  
+    - **`CreateUser`** ([app/Filament/Resources/UserResource/Pages/CreateUser.php](app/Filament/Resources/UserResource/Pages/CreateUser.php)): Handles user creation.  
+    - **`EditUser`** ([app/Filament/Resources/UserResource/Pages/EditUser.php](app/Filament/Resources/UserResource/Pages/EditUser.php)): Handles user editing.  
+    - **`ListUsers`** ([app/Filament/Resources/UserResource/Pages/ListUsers.php](app/Filament/Resources/UserResource/Pages/ListUsers.php)): Displays a list of users.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **`ContactMessageResource`** ([app/Filament/Resources/ContactMessageResource.php](app/Filament/Resources/ContactMessageResource.php)): Provides Filament-based CRUD operations for contact messages.  
+  - **Pages**:  
+    - **`ListContactMessages`** ([app/Filament/Resources/ContactMessageResource/Pages/ListContactMessages.php](app/Filament/Resources/ContactMessageResource/Pages/ListContactMessages.php)): Displays a list of contact messages.
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 4. **Services**
+   - **`ScraperService`** ([app/Services/ScraperService.php](app/Services/ScraperService.php)): Scrapes project data from GitHub or other sources.
+   - **`HtmlSanitizerService`** ([app/Services/HtmlSanitizerService.php](app/Services/HtmlSanitizerService.php)): Sanitizes HTML content for project descriptions.
 
-## Contributing
+### 5. **Jobs**
+   - **`ImportProjectMediaJob`** ([app/Jobs/ImportProjectMediaJob.php](app/Jobs/ImportProjectMediaJob.php)): Handles asynchronous media import for projects.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 6. **Routes**
+   - **Web Routes** ([routes/web.php](routes/web.php)): Defines routes for project management, including importing, creating, and listing projects.
 
-## Code of Conduct
+### 7. **Views**
+   - **Frontend Views**: Includes views for displaying projects, categories, and technologies.
+   - **Filament Views**: Custom views for Filament admin pages.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Installation
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   composer install
+   npm install
