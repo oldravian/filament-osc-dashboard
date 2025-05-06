@@ -9,7 +9,7 @@ class ScraperService
 {
     public function getProjectInfo(string $repo)
     {
-        $headers = ['Authorization' => 'Bearer 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'];
+        $headers = ['Authorization' => 'Bearer ' . env('GITHUB_TOKEN')];
 
         $output = ['project' => [], 'images' => []];
         $project = [];
