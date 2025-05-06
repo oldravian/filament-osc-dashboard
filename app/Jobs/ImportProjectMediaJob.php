@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\ImageUploaderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,9 +27,20 @@ class ImportProjectMediaJob implements ShouldQueue
      */
     public function handle(): void
     {
-        logger()->info("ImportProjectMediaJob started for project: {$this->project->id}", [
-            'project' => $this->project->toArray(),
-            'images' => $this->images,
-        ]);
+        $project = $this->project;
+        $images = $this->images;
+        $uploader = new ImageUploaderService();
+        $settings = ['disk' => 'projectsStorage', 'directory' => 'images'];
+        $medias = [];
+        foreach ($images as $key => $image) {
+            $ret = $uploader->storeFile($image, $settings, $project->slug . "-" . $key + 1);
+            if ($ret !== false) {
+                $medias[] = ['path' => $ret['path'], 'is_primary' => $key == 0 ? true : false];
+            }
+        }
+
+        if (count($medias) > 0) {
+            $project->medias()->createMany($medias);
+        }
     }
 }

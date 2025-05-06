@@ -17,6 +17,8 @@ use App\Services\ScraperService;
 use App\Services\HtmlSanitizerService;
 use Illuminate\Support\Str;
 use App\Jobs\ImportProjectMediaJob;
+use App\Services\ProjectImportService;
+use Exception;
 
 class ImportProject extends Page implements HasForms
 {
@@ -58,74 +60,23 @@ class ImportProject extends Page implements HasForms
             ->statePath('data');
     }
 
-    public function importProject(): void
+    public function importProject(ProjectImportService $importService): void
     {
-        $data = $this->form->getState();
-        if(Project::whereGitLinkExists($data['github_link'])) {
+        try {
+            $importService->import($this->form->getState());
+
             Notification::make()
-                ->title('GitHub link is already added!')
+                ->title('Project imported successfully!')
+                ->success()
+                ->send();
+
+            $this->form->fill();
+        } catch (Exception $e) {
+            Notification::make()
+                ->title($e->getMessage())
                 ->danger()
                 ->send();
-            return;
         }
-
-        $git_link = str_replace("https://github.com/", "", $data['github_link']);
-        $git_link = rtrim($git_link, '/');
-
-        $scraperService = app(ScraperService::class);
-        try{
-            $result = $scraperService->getProjectInfo($git_link);
-        }
-        catch (\Exception $e) {
-            Notification::make()
-                ->title('Error fetching project data!')
-                ->danger()
-                ->send();
-            return;
-        }
-        $project_input = $result['project'];
-
-        $candidate_slug = Str::properSlug($project_input['title']);
-
-        // set project slug
-        if(Project::whereSlugExists($data['github_link'])){
-            $project_input['slug'] = Str::properSlug($project_input['full_name']);
-        }
-        else{
-            $project_input['slug'] = $candidate_slug;
-        }
-
-        // set project short_description
-        $short_description = $project_input['short_description'];
-        if (strlen($short_description) > 500) {
-            $project_input['short_description'] = substr($short_description, 0, 490);
-        }
-
-        // set project keywords
-        $keywords = $project_input['keywords'];
-        if (strlen($keywords) > 500) {
-            $project_input['keywords'] = substr($keywords, 0, 490);
-        }
-
-        // set project description
-        $project_input['description'] = HtmlSanitizerService::addRelAttributes($project_input['description']);
-
-        $project = Project::create($project_input);
-        $project->categories()->attach($data['categories']);
-        $project->technologies()->attach($data['technologies']);
-
-        $images = $result['images'];
-        $images = array_slice($images, 0, 20);
-        
-        //dispatch queue job to import images
-        ImportProjectMediaJob::dispatch($project, $images);
-
-        Notification::make()
-            ->title('Project imported successfully!')
-            ->success()
-            ->send();
-
-        // clear form after submit
-        $this->form->fill();
     }
+    
 }
