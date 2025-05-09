@@ -38,4 +38,6 @@ class OverviewChart extends ChartWidget
     {
         return 'line';
     }
+
+    protected static ?string $maxHeight = '300px';
 }

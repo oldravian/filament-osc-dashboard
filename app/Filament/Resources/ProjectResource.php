@@ -12,8 +12,11 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
 
@@ -108,38 +111,25 @@ class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('full_name')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('default_branch')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('keywords')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('short_description')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('stars')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('git_link')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('demo_link')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_visible')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                IconColumn::make('hasDemo')
+                    ->label('Has Demo')
                     ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->getStateUsing(fn ($record) => ! is_null($record->demo_link)),
+                IconColumn::make('is_visible')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('without_demo')
+                    ->query(fn (Builder $query) => $query->whereNull('demo_link')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
