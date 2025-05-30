@@ -218,15 +218,31 @@ class ProjectResource extends Resource
                         ->action(function (array $data, Collection $records): void {
                             $technologies = $data['technologies'] ?? [];
 
+                            if (empty($technologies)) {
+                                return;
+                            }
+
+                            // Eager-load 'technologies' to avoid N+1 queries
+                            $records->load('technologies');
+
                             foreach ($records as $project) {
-                                $project->technologies()->sync($technologies);
+                                // Get currently attached technology IDs for this project
+                                $existingTechIds = $project->technologies->pluck('id')->all();
+
+                                // Filter out the ones already attached
+                                $newTechIds = array_diff($technologies, $existingTechIds);
+
+                                if (! empty($newTechIds)) {
+                                    $project->technologies()->attach($newTechIds);
+                                }
                             }
 
                             Notification::make()
-                                ->title('Technologies assigned successfully!')
+                                ->title("Technologies assigned to {$records->count()} project(s) successfully!")
                                 ->success()
                                 ->send();
                         }),
+
                 ]),
             ])
             ->defaultSort('id', 'desc');
