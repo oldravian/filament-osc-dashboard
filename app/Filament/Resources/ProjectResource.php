@@ -119,10 +119,10 @@ class ProjectResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category_names')
                     ->label('Categories')
-                    ->searchable(),
+                    ->searchable(false),
                 Tables\Columns\TextColumn::make('technology_names')
                     ->label('Technologies')
-                    ->searchable(),
+                    ->searchable(false),
                 Tables\Columns\TextColumn::make('full_name')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
