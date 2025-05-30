@@ -16,12 +16,14 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
 
@@ -197,6 +199,34 @@ class ProjectResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    BulkAction::make('assignTechnologies')
+                        ->label('Assign technologies')
+                        ->icon('heroicon-o-pencil')
+                        ->color('warning')
+                        ->modalHeading('Assign technologies')
+                        ->modalSubmitActionLabel('Save')
+                        ->requiresConfirmation(false)
+                        ->form([
+                            Grid::make(1)->schema([
+                                Select::make('technologies')
+                                    ->multiple()
+                                    ->preload()
+                                    ->relationship('technologies', 'name')
+                                    ->dehydrated(),
+                            ]),
+                        ])
+                        ->action(function (array $data, Collection $records): void {
+                            $technologies = $data['technologies'] ?? [];
+
+                            foreach ($records as $project) {
+                                $project->technologies()->sync($technologies);
+                            }
+
+                            Notification::make()
+                                ->title('Technologies assigned successfully!')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
             ])
             ->defaultSort('id', 'desc');
