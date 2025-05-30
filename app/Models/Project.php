@@ -11,9 +11,20 @@ class Project extends Model
 
     protected $guarded = [];
 
+    public function getCategoryNamesAttribute()
+    {
+        return $this->categories->pluck('name')->implode(', ');
+    }
+
+    public function getTechnologyNamesAttribute()
+    {
+        return $this->technologies->pluck('name')->implode(', ');
+    }
+
     public static function whereGitLinkExists(string $git_link): bool
     {
-        $link_bro = $git_link[strlen($git_link)-1]=="/"? rtrim($git_link, '/') : $git_link . "/";
+        $link_bro = $git_link[strlen($git_link) - 1] == '/' ? rtrim($git_link, '/') : $git_link.'/';
+
         return self::where('git_link', $git_link)->orWhere('git_link', $link_bro)->exists();
     }
 
@@ -29,7 +40,7 @@ class Project extends Model
 
     public function primaryMedia()
     {
-        return $this->hasOne(ProjectMedia::class)->where("is_primary", 1);
+        return $this->hasOne(ProjectMedia::class)->where('is_primary', 1);
     }
 
     public function categories()
